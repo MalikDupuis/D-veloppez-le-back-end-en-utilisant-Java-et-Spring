@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.TokenResponse;
 import com.example.demo.dto.UserLoginDto;
+import com.example.demo.dto.UserRegisterDto;
 import com.example.demo.model.User;
 import com.example.demo.service.JWTService;
 import com.example.demo.service.UserService;
@@ -42,7 +43,11 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody UserRegisterDto userRegisterDto) {
+        User user = new User();
+        user.setEmail(userRegisterDto.getEmail());
+        user.setPassword(userRegisterDto.getPassword());
+        user.setName(userRegisterDto.getName());
         userService.save(user);
         String token = jwtService.generateToken(user.getEmail());
         // Créer une réponse JSON avec le token
