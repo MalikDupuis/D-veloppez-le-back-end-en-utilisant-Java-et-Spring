@@ -45,7 +45,7 @@ public class RentalController {
     public ResponseEntity<?> rental(@ModelAttribute  RentalDto rentalDto, @RequestHeader("Authorization") String authorizationHeader) {
         try {
             // Sauvegarde de l'image
-            String imageUrl = fileStorageService.saveFile(rentalDto.getPicture());
+            String imageUrl = fileStorageService.uploadFile(rentalDto.getPicture());
 
             // Création de l'objet Rental
             Rental rental = new Rental();

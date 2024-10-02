@@ -30,17 +30,12 @@ public class SpringSecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/register").permitAll()
+                        .anyRequest().authenticated())
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()))
                 .build();
-    }
-
-    @Bean
-    public UserDetailsService users() {
-        UserDetails user = User.builder().username("user").password(passwordEncoder().encode("password")).roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);
     }
 
 
@@ -61,6 +56,7 @@ public class SpringSecurityConfig {
         return new NimbusJwtEncoder(new ImmutableSecret<>(this.jwtKey.getBytes()));
     }
 
+    //A supprimer
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();

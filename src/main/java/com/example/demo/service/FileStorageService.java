@@ -2,33 +2,38 @@ package com.example.demo.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Map;
 
 @Service
 public class FileStorageService {
 
-    private final String UPLOAD_DIR = "src/main/resources/static/uploads/"; // Répertoire où les images seront stockées
+    private final Cloudinary cloudinary;
 
-    public String saveFile(MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
-            throw new RuntimeException("File is empty");
-        }
+    // Constructor: Initialize Cloudinary with credentials from .env
+    public FileStorageService() {
+        Dotenv dotenv = Dotenv.load();
+        this.cloudinary = new Cloudinary(dotenv.get("CLOUDINARY_URL"));
+        this.cloudinary.config.secure = true;
+    }
 
-        // Crée le répertoire de destination s'il n'existe pas
-        Files.createDirectories(Paths.get(UPLOAD_DIR));
+    // Method to upload a file to Cloudinary
+    public String uploadFile(MultipartFile file) throws IOException {
+        // Convert the MultipartFile to a format Cloudinary can handle
+        Map<String, Object> uploadParams = ObjectUtils.asMap(
+                "use_filename", true,
+                "unique_filename", true,  // Set to true for unique filenames
+                "overwrite", true
+        );
 
-        // Génère un nom unique pour l'image (tu peux utiliser UUID ou autre)
-        String fileName = System.currentTimeMillis() + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+        // Perform the upload and get the result map
+        Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), uploadParams);
 
-        // Sauvegarde du fichier
-        Path filePath = Paths.get(UPLOAD_DIR + fileName);
-        Files.write(filePath, file.getBytes());
-
-        // Retourne l'URL du fichier (supposons que le serveur sert les fichiers depuis /uploads)
-        return "http://localhost:8080/uploads/" + fileName;
+        // Return the URL of the uploaded image
+        return uploadResult.get("url").toString();
     }
 }

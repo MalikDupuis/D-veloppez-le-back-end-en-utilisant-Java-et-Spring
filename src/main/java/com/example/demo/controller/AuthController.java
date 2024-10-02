@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.TokenResponse;
 import com.example.demo.dto.UserLoginDto;
 import com.example.demo.model.User;
 import com.example.demo.service.JWTService;
@@ -29,19 +30,15 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> getToken(@RequestBody UserLoginDto userLoginDto) {
         User user = userService.findByEmailAndPassword(userLoginDto.getEmail(), userLoginDto.getPassword());
-        System.out.println(user);
+
         if(user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("{\"error\":\"Email ou mot de passe incorrect\"}");
         }
         String token = jwtService.generateToken(userLoginDto.getEmail());
 
-        // Créer une réponse JSON avec le token
-        Map<String, String> response = new HashMap<>();
-        response.put("token", token);
-
-        // Retourner une réponse HTTP 200 avec le token en JSON
-        return ResponseEntity.ok(response);
+        TokenResponse tokenResponse = new TokenResponse(token);
+        return ResponseEntity.ok(tokenResponse);
     }
 
     @PostMapping("/register")
@@ -58,7 +55,7 @@ public class AuthController {
 
     @GetMapping("/me")
     public User me(@RequestHeader("Authorization") String authorizationHeader) {
-        System.out.println(authorizationHeader);
+
         // Extraire le token du header Authorization
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7); // Retirer "Bearer " pour ne garder que le token
@@ -70,7 +67,7 @@ public class AuthController {
 
                 // Récupérer l'utilisateur depuis la base de données avec l'email
                 User user = userService.findByEmail(email);
-                System.out.println(user);
+
 
                 return user;
             } else {
