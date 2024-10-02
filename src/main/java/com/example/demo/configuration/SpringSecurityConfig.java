@@ -1,6 +1,7 @@
 package com.example.demo.configuration;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,7 +45,10 @@ public class SpringSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    private String jwtKey = "m7fU8jK0l9P3qXzN5cV1gR2tF4aH6dB8jW9rY1vM3bL7sQ0";
+
+    Dotenv dotenv = Dotenv.load();
+    private String jwtKey = dotenv.get("JWT_KEY");
+
     @Bean
     public JwtDecoder jwtDecoder() {
         SecretKeySpec secretKey = new SecretKeySpec(this.jwtKey.getBytes(), 0, this.jwtKey.getBytes().length,"RSA");
@@ -56,10 +60,5 @@ public class SpringSecurityConfig {
         return new NimbusJwtEncoder(new ImmutableSecret<>(this.jwtKey.getBytes()));
     }
 
-    //A supprimer
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
 
 }
