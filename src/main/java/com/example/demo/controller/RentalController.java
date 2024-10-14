@@ -67,7 +67,6 @@ public class RentalController {
 
                     // Récupérer l'utilisateur depuis la base de données avec l'email
                     User user = userService.findByEmail(email);
-                    System.out.println(user);
 
                     rental.setOwnerId(user.getId());
 

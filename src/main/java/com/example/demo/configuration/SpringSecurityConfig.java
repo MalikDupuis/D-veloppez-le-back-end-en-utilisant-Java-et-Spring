@@ -2,22 +2,17 @@ package com.example.demo.configuration;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import io.github.cdimascio.dotenv.Dotenv;
-import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -25,6 +20,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 public class SpringSecurityConfig {
+
+    private String jwtKey = Dotenv.load().get("JWT_KEY");
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -46,8 +43,6 @@ public class SpringSecurityConfig {
     }
 
 
-    Dotenv dotenv = Dotenv.load();
-    private String jwtKey = dotenv.get("JWT_KEY");
 
     @Bean
     public JwtDecoder jwtDecoder() {

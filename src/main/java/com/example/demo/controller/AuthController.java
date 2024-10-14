@@ -9,6 +9,7 @@ import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,6 +23,9 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private JWTService jwtService;
 
     public AuthController(JWTService jwtService) {
@@ -30,9 +34,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> getToken(@RequestBody UserLoginDto userLoginDto) {
-        User user = userService.findByEmailAndPassword(userLoginDto.getEmail(), userLoginDto.getPassword());
+        User user = userService.findByEmail(userLoginDto.getEmail());
 
         if(user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("{\"error\":\"Email ou mot de passe incorrect\"}");
+        }
+        if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("{\"error\":\"Email ou mot de passe incorrect\"}");
         }
@@ -46,7 +54,8 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody UserRegisterDto userRegisterDto) {
         User user = new User();
         user.setEmail(userRegisterDto.getEmail());
-        user.setPassword(userRegisterDto.getPassword());
+        String encodedPassword = passwordEncoder.encode(userRegisterDto.getPassword());
+        user.setPassword(encodedPassword);
         user.setName(userRegisterDto.getName());
         userService.save(user);
         String token = jwtService.generateToken(user.getEmail());
