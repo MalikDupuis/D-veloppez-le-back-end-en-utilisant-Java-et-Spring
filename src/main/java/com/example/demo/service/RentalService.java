@@ -21,4 +21,8 @@ public class RentalService {
     public void saveRental(Rental rental) {
         rentalRepository.save(rental);
     }
+
+    public Rental getRentalById(long id) {
+        return rentalRepository.findById(id);
+    }
 }

@@ -41,6 +41,12 @@ public class RentalController {
         return new RentalResponse(rentalList);
     }
 
+
+    @GetMapping("/{rentalId}")
+    public Rental rental(@PathVariable Long rentalId) {
+        return rentalService.getRentalById(rentalId);
+    }
+
     @PostMapping()
     public ResponseEntity<?> rental(@ModelAttribute  RentalDto rentalDto, @RequestHeader("Authorization") String authorizationHeader) {
         try {
