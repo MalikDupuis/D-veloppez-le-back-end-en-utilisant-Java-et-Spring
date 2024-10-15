@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.RentalDto;
+import com.example.demo.dto.RentalMessageResponse;
 import com.example.demo.dto.RentalResponse;
 import com.example.demo.model.Rental;
 import com.example.demo.model.User;
@@ -48,7 +49,7 @@ public class RentalController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> rental(@ModelAttribute  RentalDto rentalDto, @RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<RentalMessageResponse> rental(@ModelAttribute  RentalDto rentalDto, @RequestHeader("Authorization") String authorizationHeader) {
         try {
             // Sauvegarde de l'image
             String imageUrl = fileStorageService.uploadFile(rentalDto.getPicture());
@@ -86,10 +87,11 @@ public class RentalController {
             // Sauvegarde dans la base de données
             rentalService.saveRental(rental);
 
-            return ResponseEntity.ok("savedRental");
+            return ResponseEntity.ok(new RentalMessageResponse("Rental created!"));
 
         } catch (IOException e) {
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new RentalMessageResponse("Erreur lors de l'upload de l'image : " + e.getMessage()));
         }
     }
 }

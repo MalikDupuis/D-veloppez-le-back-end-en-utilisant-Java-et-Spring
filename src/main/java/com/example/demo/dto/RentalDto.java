@@ -12,7 +12,7 @@ public class RentalDto {
 
     private Long id;
     private String name;
-    private String surface;
+    private int surface;
     private int price;
     private MultipartFile picture;
     private String description;

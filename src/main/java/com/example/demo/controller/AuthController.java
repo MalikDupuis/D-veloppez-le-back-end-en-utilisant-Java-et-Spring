@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.TokenResponse;
+import com.example.demo.dto.UserDto;
 import com.example.demo.dto.UserLoginDto;
 import com.example.demo.dto.UserRegisterDto;
 import com.example.demo.model.User;
@@ -68,7 +69,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public User me(@RequestHeader("Authorization") String authorizationHeader) {
+    public UserDto me(@RequestHeader("Authorization") String authorizationHeader) {
 
         // Extraire le token du header Authorization
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -81,9 +82,15 @@ public class AuthController {
 
                 // Récupérer l'utilisateur depuis la base de données avec l'email
                 User user = userService.findByEmail(email);
+                UserDto userDto = new UserDto();
+                userDto.setId(user.getId());
+                userDto.setEmail(email);
+                userDto.setName(user.getName());
+                userDto.setUpdated_at(user.getUpdated_at());
+                userDto.setCreated_at(user.getCreated_at());
 
 
-                return user;
+                return userDto;
             } else {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token JWT invalide");
             }
