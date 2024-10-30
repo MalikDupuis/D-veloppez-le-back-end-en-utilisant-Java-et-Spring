@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.MessageDto;
+import com.example.demo.dto.MessageReceiveDto;
 import com.example.demo.model.Message;
 import com.example.demo.model.User;
 import com.example.demo.service.JWTService;
@@ -25,12 +26,16 @@ public class MessageController {
 
 
     @PostMapping
-    public ResponseEntity<MessageDto> createMessage(@ModelAttribute MessageDto messageDto, @RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<MessageDto> createMessage(@RequestBody MessageReceiveDto messageReceiveDto) {
 
+        System.out.println(messageReceiveDto.getMessage());
+        System.out.println(messageReceiveDto.getUser_id());
         Message message = new Message();
-        message.setMessage(messageDto.getMessage());
+        message.setMessage(messageReceiveDto.getMessage());
+        message.setUser_id(messageReceiveDto.getUser_id());
+        message.setRental_id(messageReceiveDto.getRental_id());
         messageService.saveMessage(message);
-        messageDto.setMessage("Message saved successfully");
+        MessageDto messageDto = new MessageDto("Message send with success");
         return ResponseEntity.ok(messageDto);
     }
 }

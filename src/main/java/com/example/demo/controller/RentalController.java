@@ -94,4 +94,23 @@ public class RentalController {
                     .body(new RentalMessageResponse("Erreur lors de l'upload de l'image : " + e.getMessage()));
         }
     }
+
+    @PutMapping("/{rentalId}")
+    public ResponseEntity<RentalMessageResponse> modifyRental(@ModelAttribute  RentalDto rentalDto, @RequestHeader("Authorization") String authorizationHeader, @PathVariable Long rentalId) {
+
+            Rental rental = rentalService.getRentalById(rentalId);
+            rental.setName(rentalDto.getName());
+            rental.setDescription(rentalDto.getDescription());
+            rental.setPrice(rentalDto.getPrice());
+            rental.setSurface(rentalDto.getSurface());
+
+
+            // Sauvegarde dans la base de données
+            rentalService.saveRental(rental);
+
+            return ResponseEntity.ok(new RentalMessageResponse("Rental updated !"));
+
+
+    }
 }
+
