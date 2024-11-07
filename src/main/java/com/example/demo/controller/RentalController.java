@@ -45,7 +45,11 @@ public class RentalController {
 
     @GetMapping("/{rentalId}")
     public Rental rental(@PathVariable Long rentalId) {
-        return rentalService.getRentalById(rentalId);
+        Rental rental = rentalService.getRentalById(rentalId);
+        if (rental == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return rental;
     }
 
     @PostMapping()
@@ -99,6 +103,9 @@ public class RentalController {
     public ResponseEntity<RentalMessageResponse> modifyRental(@ModelAttribute  RentalDto rentalDto, @RequestHeader("Authorization") String authorizationHeader, @PathVariable Long rentalId) {
 
             Rental rental = rentalService.getRentalById(rentalId);
+            if (rental == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
             rental.setName(rentalDto.getName());
             rental.setDescription(rentalDto.getDescription());
             rental.setPrice(rentalDto.getPrice());
