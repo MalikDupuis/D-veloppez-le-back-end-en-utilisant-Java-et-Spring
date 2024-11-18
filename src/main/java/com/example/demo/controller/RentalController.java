@@ -9,6 +9,8 @@ import com.example.demo.service.FileStorageService;
 import com.example.demo.service.JWTService;
 import com.example.demo.service.RentalService;
 import com.example.demo.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/rentals")
 public class RentalController {
@@ -42,7 +45,8 @@ public class RentalController {
         return new RentalResponse(rentalList);
     }
 
-
+    @Operation(summary = "Get rental by id", description = "Get rental by id")
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/{rentalId}")
     public Rental rental(@PathVariable Long rentalId) {
         Rental rental = rentalService.getRentalById(rentalId);

@@ -14,7 +14,7 @@ public class FileStorageService {
 
     private final Cloudinary cloudinary;
 
-    // Constructor: Initialize Cloudinary with credentials from .env
+    // Constructor: Initialize Cloudinary with credentials from config.properties
     public FileStorageService() {
         Dotenv dotenv = Dotenv.load();
         this.cloudinary = new Cloudinary(dotenv.get("CLOUDINARY_URL"));
